@@ -1,0 +1,8 @@
+
+In the game there will be two types of Markets:
+
+	 SeafoodMarket: Where the player sells SeaCreatures they bought
+	 EquipmentMarket: Where the player buys equipment
+	 
+Look at ResourceTest in the test package to get an idea of how resources work.
+

@@ -1,0 +1,32 @@
+Pseudocode for HandleServerSideGameControl
+
+HandleServerSideGameControl is nested class within CatchServer
+This way it has access to the server’s streams and its instance of ocean
+When a user is successfully logged in, a new HandleServerSideGameControl thread 
+is created for the user. Thus there can be as many threads as users or as the 
+JVM or server's machine can handle.
+It runs in a loop that runs as long as loggedIn is true. It can receive 3 
+different objects so far:
+    Player
+    RequestPacket
+    ClientSubOceanSeaCreatureStatePacket
+It will do different things depending on what it receives.
+If it receives a Player, the DAO will save that player.
+If it receives a RequestPacket, and it's code is Codes.LOGOUT_REQUEST_CODE,
+it will set loggedIn to false, so the loop (and thus the thread) will terminate.
+If it receives a ClientSubOceanSeaCreatureStatePacket (which is what would occur
+most frequently during gameplay), it makes a packet for each species,
+by calling ocean's extractAndReturnABunchOfFish with the info of each species 
+from the ClientSubOceanSeaCreatureStatePacket, and then creates a 
+SeaCreaturePacket which it sends to the client.  So extractAndReturnABunchOfFish
+Is called once per species.
+extractAndReturnABunchOfFish takes as paramaters the current (client-side)
+population of fish of a given species, the max (client-side)
+population of fish of a given species, and the species.
+It then returns an array list (with its own non-arbitrary method) of
+SeaCreatures of that species that can be as small as 0, and as great as 
+however many SeaCreatures would be necessary to fill the clientSubOcean
+to its max for that species.
+The SeaCreaturePacket consists of an ArrayList for each species, although  
+any or all lists can be empty (or not at all empty)
+This packet then gets sent to the client associated with this thread.

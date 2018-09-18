@@ -1,0 +1,49 @@
+Story 1 - Onboarding
+
+As a player, I will open the program and see a nice login screen.
+
+I will be able to enter the following and click “Login”:
+    -the IP of the server I wish to connect to
+    -the port I wish to use to connect
+    -my name
+    -my password
+OR
+
+I will be able to click “New User”, and be able to enter the following and click “Make Account”:
+    -the IP of the server I wish to register with
+    -the port I wish to use to connect to with
+    -my desired name
+    -my desired password
+
+OR
+
+I will be able start a new server, and then give the my IP address to my friends, so they can play too. After making a new server, I will then have to log into it.
+
+Story 2 – Gameplay
+
+As a player, my previous session will be loaded from my machine. My money and resources which I have obtained will be the same as they were when I last played the game.
+
+As a player I will see the screen divided horizontally into two separate sections.
+
+The top half of the screen will show either information or actions of the game.
+I will choose which I see by making a selection from one of the buttons in the bottom half of the screen.
+
+If I choose “Go Fishing”, the top pane will change to a fishing activity:
+    -If I have no Equipment, I will have to catch SeaCreatures by clicking on them as they appear. If I catch one, it will be added to my IceChest.
+    -If I have an Equipment item with a of Useage of type SimpleFishing, it will adjust the “footprint” of my mouse bigger, making it easier to catch fish. The specific item I have will affect the size of the footprint.
+
+    -If I have an Equipment item with a Usage of BoatFishing, I will be able to press my right and left arrow keys to move my Boat, which will populate my screen with more fish. I will catch the fish simply be being above them. The specific item I have will give me choices as to which what type of fish I want to fish for, or whether or not I know the contents of the Ocean.
+
+If I choose “Go to Market”, I will be able to to select “Fish Market” or “Marina”
+    If I selected “Fish Market”, I will be able to 
+-See the current prices per pound of SeaCreatures, and how long the price is good for.
+        -Sell my SeaCreatures for money
+    If I choose “Marina”, I will be able to
+        - Buy new equipment
+-Sell my old equipment
+
+Story 3 – CleanUp
+
+When I close the game, the current resources and my money will be saved on my machine.
+The amount of money I have made will be sent to the database, so that high scores can be kept track of.
+

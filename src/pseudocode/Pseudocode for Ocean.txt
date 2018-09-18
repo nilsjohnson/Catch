@@ -1,0 +1,113 @@
+Pseudocode for Ocean
+
+Overview
+
+This class has 6 ArrayLists for the 6 different species it has,
+a relativeGrowthRate, and a regenerationTimeInterval.  It is serializable so 
+that it can be saved when the server is quit.
+
+Constructor
+
+Right now it doesn't load an old ocean when constructed but assumes it is a
+new game.
+Then it calls fillOceanInitially which fills each ArrayList up to each species
+max population capacity for the ocean with values found in Constants class.
+It actually instantiates fish or shellfish of the given type and gives them a 
+random weight between values once again founds in the Constants class, by 
+calling (indirectly) addABunchOfFish and and addABunchOfShellfish.  They will be
+described in more depth below.
+It then calls regenerateOcean which starts a timer task that calls
+updateAllSeaCreaturePopulations every five seconds.
+The update method will be described below.
+
+General extractions and growth
+
+At any given time, extractAndReturnABunchOfFish and 
+extractAndReturnABunchOfShellfish may be called by CatchServer's
+HandleServerSideGameControl.  Depending on the input parameter's,
+fish or shellfish may be extracted and returned from the ocean
+(to HandleServerSideGameControl).
+extractAndReturnABunchOfShellfish will be described in more depth below
+Thus, this decreases the population of the ocean.
+This is where updateAllSeaCreaturePopulations comes in.  It can add SeaCreatures
+to the ocean until the ocean reaches max (or very close to max)
+population for each species.
+
+So the overall method groups that must be described are
+
+adding SeaCreatures
+determining how many SeaCreatures to add at a given time
+extracting SeaCreatures
+determining how many SeaCreatures to extract and return at a given time
+
+adding SeaCreatures
+
+adding SeaCreatures is done with addABunchOfFish and addABunchOfShellfish
+these methods are wrapped in specific methods that only require an int of 
+numToAdd as they are specific to each species
+Basically, there are similar methods for Fish as for Shellfish,
+so please assume in reading this if we talk about a fish method there is also a 
+shellfish method
+addABunchOfFish receives a FishSpecies, ArrayList<Fish> population, and 
+numToAdd.  Basically this method runs a for loop numToAdd times, each time 
+adding a fish of that species to the proper population by calling, addFish.
+addFish just needs a population and a species.  It creates a fish of that 
+species and adds it to the given population.  It creates the fish by passing to
+its constructor the species and a weight determined by getRandomWeightForFish,
+which just needs a species.  getRandomWeightForFish will determine the min and 
+max weight based on a switch statement based on the species, and constants
+found in the Constants class.  It will then get a random weight in the range of 
+max and min, by calling NumberUtilities.getRandomDouble().
+So that is how fish are made.
+
+determining how many SeaCreatures to extract and return at a given time
+
+as for determining how many SeaCreatures to extract and return at a given
+time, this is done based on the percentage filled for a species of the ocean
+compared with the percentage filled of a species of the clientSubOcean,
+basically, extractAndReturnABunchOfFish determines whether or not to give fish
+based on the size of the species ArrayList divided by the max found in Constants 
+compared with the client current population received as a parameter divided
+by the client max population received as a parameter.  If the Ocean has a higher
+percentage filled, it will extract and give fish.  Otherwise, it will return an 
+empty list.  If it's more full, it will extract and return fish equal to the
+number given by the percentage that the ocean is full for that species
+times the client's max population for that species (that product gives you
+the desired new population) minus whatever the client has already.
+Yes, this shortchanges the ocean a little, as the client will be more full,
+but we're not worrying about this.  
+
+extracting SeaCreatures
+
+extractABunchOfFish is then called,
+with the given number and population, and it runs a for loop for that number,
+each time calling extractAFish which extracts the last fish in the ArrayList
+of that population and returns it so that extractABunchOfFish can add it to a 
+different ArrayList that will be returned.
+
+determining how many SeaCreatures to add at a given time
+
+When updateAllSeaCreaturePopulations is called, and it calls update 
+methods for all the species they call updateFishPopulation or 
+updateShellfishPopulation.  updateFishPopulation takes a (virtual) time
+a fish population, a speciesMaxPopulation, and a species.
+It then first determines how many fish to add with 
+determineNumberNewFishOfPopulationGrowth, which returns an int,
+and that int is used to add fish with addABunchOfFish (already discussed)
+determineNumberNewFishOfPopulationGrowth takes all the parameters of 
+updateFishPopulation.  It then uses a formula of off wikipedia (the general
+population growth formula) to determine how many fish should have been added
+to the population based, on a time interval, the previous population size,
+and the max or "carrying" population size.
+The previous population is determined by the population ArrayList's size
+First we ned as double we'll call A. It's just 
+(carrying population- previous population)/previous population.
+We then are going to get the growth by making a fraction.
+It's numerator is just carry population
+It's denominator is 1+A times e raised to the k, where k is
+-relative growth rate*elapsed time.
+The numerator divided by the denominator gives the new population.
+To get the growth we subtract out the previous population
+we then return this number
+Once this number is returned, we pass it, the population passed in, and
+the species passed in to addABunchOfFish and then return the result.

@@ -1,0 +1,92 @@
+program launches
+
+a new stage displays a loginPane.
+
+    -Login Flow-
+user enters server IP/ port and login credentials
+user presses login
+Catch.java calls the constructor of GameControl.
+GameControl sends a loginPacket to the IP the user entered.
+server recieves a loginPacket with the entered name and password.
+server's DAO fetches an object containing that players Player object
+	DAO checks to see if that user exists
+		if that user does not exist, throw BadLoginException(USER_NOT_FOUND)
+		if that user exists but the password is wrong, throw BadLoginException(INVALID_PASSWORD)
+		if there are now users, throw BadLoginException(NO_USERS)
+		if the login information was too short or incomplete, throw BadLoginException(INVALID_ATTEMPT). Does not make database 				call.
+		Update serverPane to show what happened
+		send ResponsePacket(response code for what happened)
+		GameControl stops making the GameControl object
+		LoginPane displays the error.
+		go back to displaing LoginPane
+server sends that object back to Catch.java
+server starts a new thread serving requests from that client, with the current streams.
+server goes back to listening for requests.
+GameControl sets its player to the one returned by the server.
+
+    -New User Flow-
+user clicks "New User" button
+user enters the server they wish to connect to and port number.
+user enters desired login credentials
+each textField listens for change.
+on change, it verifies if the field is legally formatted.
+if it is, it turns that requirement green.
+User clicks "Create Account"
+Catch.java sends a newUserPacket to the server.
+	if the username is invalid, throw NewUserExcption(INVALID_USERNAME)
+	if the password is invalid, throw NewUserExcption(INVALID_PASSWORD)
+	if the username is taken, throw NewUserExcption(NAME_TAKEN)
+	Update serverPane to show what happened
+	send ResponsePacket(response code for what happened)
+	update NewUserpane with message for the error.
+	go back to displaying NewUserPane
+servers DAO makes a new Player object
+Server responds with NEW_USER_SUCESS_CODE
+Catch.java calls GameControl's constructor and starts a new game
+Do "Login Flow"
+
+    -New Server Flow-
+User clicks "New Server"
+CatchServer finds an open port and creates a server socket and makes two streams with an ObjectInputStream and ObjectOutputStream
+sets listeningForNewClientsToTrue
+while listeningForNewClientsToTrue, set objectInputStream to accept new connections and wait. 
+
+   -GamePlay-
+User clicks "Go fishing"
+a new fishing activity is started
+User clicks “Go to Market”
+Right now there is just one “Sell Fish” button
+User clicks "View My Resources"
+Resources are displayed, but only number of fish changes so far,
+and only can go up (when a fish is caught)
+
+    -FishingActivity and Related Server/Ocean Stuff-
+SeaCreatures are sent from the server to the client
+When a fish is caught, a request is made of the server for more SeaCreatures by sending info about the state of the clientSubOcean from 
+the client to the Server, which handles it in a thread called HandleServerSideGameControl, a nested class of CatchServer.  It handles the 
+request by calling ocean’s extractAndReturnABunchOfFish method for each species (or extractAndReturnABunchOfShellfish), which determines 
+how many SeaCreatures of each species to send.  These SeaCreatures are then sent to the client and added to the client’s 
+SimpleFishingPane.
+A fish is caught by clicking on it (There is a event handler ExtractFishAction that is passed to the corresponding node of the fish).
+When this action is fired, the fish’s graphic (right now just a circle)
+Is removed from the screen and the fish object is added to the player’s ice chest.
+See Pseudocode for FishingActivity for how fish are added and “caught”, and
+see Pseudocode for HandleServerSideGameControl for how fish are sent on the server’s side, 
+and Pseudocode for Ocean, for all the details of how it is determined what gets sent and what SeaCreatures are created and replenished
+in Ocean.
+
+    -Close GameControl-
+User fires stageCloseRequest by "x-ing out" or file -> close
+GameControl sends Player Object to server
+Server receives instanceof Player object
+Server's DAO saves the player by writing it to a file.
+server continues to listen for client requets.
+GameControl sends LogoutRequestPacket.
+Server recieves logout request and no longer listens for requets.
+Thread returns. 
+
+
+
+
+
+
