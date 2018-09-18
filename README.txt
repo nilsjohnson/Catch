@@ -1,4 +1,4 @@
-Catch.jar is the Finished product. Use this to play the game!
+Catch!.jar is the Finished product. Use this to play the game!
 
 We have included the necessary SQLite JDBC Jar.
 
